@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Requirement Form</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <div>
+            <img src="../static/background.svg"
+                style=" width:650px; position: absolute; margin-top: 350px;margin-left: 663px;" />
+        </div>
+        <h1 style="margin-top: 0px; text-align: left;">College Recommendation Form</h1>
+        <form id="candidate-form" action="/submit" method="POST">
+            <div class="form-group">
+                <label for="student-name">Student Name *</label>
+                <input type="text" id="student-name" name="student-name" >
+            </div>
+            <div class="form-group">
+                <label>Gender *</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" id="male" name="gender" >
+                        Male
+                    </label>
+                    <label>
+                        <input type="radio" id="female" name="gender" value="Female" required>
+                        Female
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Category *</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" id="open" name="category" >
+                        Open
+                    </label>
+                    <label>
+                        <input type="radio" id="obc" name="category" value="OBC" required>
+                        OBC
+                    </label>
+                    <label>
+                        <input type="radio" id="sc" name="category" value="SC" required>
+                        SC
+                    </label>
+                    <label>
+                        <input type="radio" id="st" name="category" value="ST" required>
+                        ST
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="state-rank">State Rank</label>
+                <input type="text" id="state-rank" name="state-rank" value="15422">
+            </div>
+            <div class="form-group">
+                <label for="mh-cet-percentage">MH CET Percentage *</label>
+                <input type="text" id="mh-cet-percentage" name="mh-cet-percentage" value="97" required>
+            </div>
+            <div class="form-group">
+                <label>Desired Branches *</label>
+                <button type="button" class="open-modal" id="branch-button">Select Desired Branches</button>
+            </div>
+            <div class="form-group">
+                <label>College Status *</label>
+                <button type="button" class="open-modal" id="college-button">Select College Status</button>
+            </div>
+            <div style="display: flex; margin-left: 15%;">
+                <button type="submit" class="submit-button" style="height: 40px; margin-top:20px;">Submit</button>
+                <button type="button" id="check-colleges" class="btn-primary custom-button">Check Available
+                    Colleges</button>
+            </div>
+        </form>
+
+        <div id="loader" style="display: none;">
+            <span class="loader" style="margin-top: 20px; margin-left: 45%;"></span>
+        </div>
+
+        <!-- Modal for Desired Branches -->
+        <div id="branch-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="close-branch-modal">&times;</span>
+                <h2>Select Desired Branches</h2>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" value="Computer Science"> Computer Science</label>
+                    <label><input type="checkbox" value="Information Technology"> Information Technology</label>
+                    <label><input type="checkbox" value="Electrical Engineering" checked> Electrical Engineering</label>
+                    <label><input type="checkbox" value="Mechanical Engineering"> Mechanical Engineering</label>
+                    <label><input type="checkbox" value="Civil Engineering"> Civil Engineering</label>
+                    <label><input type="checkbox" value="AI & Data Science" checked> AI & Data Science</label>
+                    <label><input type="checkbox" value="Chemical Engineering"> Chemical Engineering</label>
+                </div>
+                <button id="confirm-branches" class="confirm-btn">Confirm</button>
+            </div>
+        </div>
+
+        <!-- Modal for College Status -->
+        <div id="college-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="close-college-modal">&times;</span>
+                <h2>Select College Status</h2>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" value="Government Autonomous" checked> Government Autonomous</label>
+                    <label><input type="checkbox" value="University Department"> University Department</label>
+                    <label><input type="checkbox" value="Government"> Government</label>
+                    <label><input type="checkbox" value="Unaided"> Unaided</label>
+                    <label><input type="checkbox" value="Minority"> Minority</label>
+                    <label><input type="checkbox" value="University Managed Department"> University Managed
+                        Department</label>
+                    <label><input type="checkbox" value="Unaided Autonomous"> Unaided Autonomous</label>
+                </div>
+                <button id="confirm-college-status" class="confirm-btn">Confirm</button>
+            </div>
+        </div>
+
+        <!-- Modal for Available Colleges -->
+        <div id="colleges-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="close-colleges-modal">&times;</span>
+                <h2>Available Colleges</h2>
+                <table id="colleges-table" class="display">
+                    <thead>
+                        <tr>
+                            <th>College</th>
+                            <th>Branch</th>
+                            <th>Status</th>
+                            <th>MH-CET Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody id="colleges-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js"
+        integrity="sha512-ykZ1QQr0Jy/4ZkvKuqWn4iF3lqPZyij9iRv6sGqLRdTPkY69YX6+7wvVGmsdBbiIfN/8OdsI7HABjvEok6ZopQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+
+    <script src="static/script.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Open Available Colleges Modal
+            $('#check-colleges').click(function () {
+                $.getJSON('/get-colleges', function (data) {
+                    let colleges = data.colleges;
+                    $('#colleges-body').empty(); // Clear existing entries
+
+                    colleges.forEach(college => {
+                        $('#colleges-body').append(`
+                            <tr>
+                                <td>${college.College}</td>
+                                <td>${college.Branch}</td>
+                                <td>${college.Status}</td>
+                                <td>${college["GOPENS MH-CET Percentage"]}</td>
+                            </tr>
+                        `);
+                    });
+
+                    // Initialize DataTable
+                    $('#colleges-table').DataTable();
+
+                    // Show modal
+                    $('#colleges-modal').show();
+                });
+            });
+
+            // Close the colleges modal
+            $('#close-colleges-modal').click(function () {
+                $('#colleges-modal').hide();
+                $('#colleges-table').DataTable().destroy(); // Destroy the DataTable instance
+            });
+        });
+    </script>
+</body>
+
+</html>
